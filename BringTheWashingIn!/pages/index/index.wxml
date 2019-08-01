@@ -1,2 +1,21 @@
 <!--index.wxml-->
-<view class="container">Hello World!</view>
+<view class="weather-wrapper">
+  <view class="temp">{{temp}}</view>
+  <view class="weather">{{weather}}</view>
+  <image class="weather-bg" 
+   mode="scaleToFill" src="{{weatherBackgroudImage}}"></image>
+</view>
+
+<view class="timetips">
+  <image class="timetips-icon" src="/images/time-icon.png"></image>
+  <view class="timetips-text">未来24小时天气预报</view>
+</view>
+<scroll-view scroll-x>
+  <view class="forecast-list">
+    <view class="forecast-item" wx:for="{{forecast}}">
+      <view class= 'forecast-time'> {{item.time}}</view>
+      <image class= 'forecast-weather' src='{{item.iconPath}}'></image>
+      <view class= 'forecast-temp'>{{item.temp}}</view>
+    </view>
+  </view>
+</scroll-view>
