@@ -21,74 +21,77 @@ Page({
     this.getNow()
   },
   onPullDownRefresh() {
-    console.log("Refreshing")
+    this.getNow(() => {
+      wx.stopPullDownRefresh()
+    })
   },
   data: {
     temp: "",
     weather: "",
     weatherBackgroudImage: "",
-    forecast: []
+    forecast: [],
+    todayTemp: "",
+    todayDate: "",
   },
   getNow(callback) {
     // let that = this
     wx.request({
       url: 'https://test-miniprogram.com/api/weather/now?city=北京市',
       success: (res) => {
-        console.log(res.data)
+        // console.log(res.data)
         let weatherResult = res.data.result
-        let temp = weatherResult.now.temp
-        let weather = weatherResult.now.weather
-        let forecastResults = weatherResult.forecast
-        let forecast = []
-        let nowHour = new Date().getHours()
-        // console.log(this.data.weatherBackgroudImage)
-        for (let i = 0; i < 8; i++) {
-          forecast.push({
-            time: (nowHour + i*3) % 24,
-            iconPath: "/images/" + forecastResults[i].weather+"-icon.png",
-            temp: forecastResults[i].temp+"°C"
-          });
-        } 
-        forecast[0].time = "Now"
-        this.setData({
-          temp: temp + '°',
-          weather: weatherMap[weather],
-          weatherBackgroudImage: "/images/" + weather + "-bg.png",
-          forecast: forecast
-        })
-        wx.setNavigationBarColor({
-          frontColor: '#000000',
-          backgroundColor: weatherColorMap[weather],
-          animation: {
-            duration: 400,
-            timingFunc: 'easeIn'
-          }
-        })
-        
+        this.setNow(weatherResult)
+        this.setToday(weatherResult)
+        this.setHourlyForcast(weatherResult)
       },
-      // success: function(res) {
-      //   // console.log(res.data)
-      //   let weatherResult = res.data.result
-      //   let temp = weatherResult.now.temp
-      //   let weather = weatherResult.now.weather
-      //   that.setData({
-      //     temp: temp + '°',
-      //     weather: weatherMap[weather],
-      //     weatherBackgroudImage: "/images/" + weather + "-bg.png"
-      //   })
-      //   wx.setNavigationBarColor({
-      //     frontColor: '#000000',
-      //     backgroundColor: weatherColorMap[weather],
-      //     animation: {
-      //       duration: 400,
-      //       timingFunc: 'easeIn'
-      //     }
-      //   })
-      //   // console.log(this.data.weatherBackgroudImage)
-      // },
       complete: () => {
         callback && callback()
       }
     })
+  },
+  setNow(weatherResult){
+    let temp = weatherResult.now.temp
+    let weather = weatherResult.now.weather
+    wx.setNavigationBarColor({
+      frontColor: '#000000',
+      backgroundColor: weatherColorMap[weather],
+      animation: {
+        duration: 400,
+        timingFunc: 'easeIn'
+      }
+    })
+    this.setData({
+      temp: temp + '°',
+      weather: weatherMap[weather],
+      weatherBackgroudImage: "/images/" + weather + "-bg.png",
+    })
+  },
+  setToday(weatherResult){
+   let date = new Date()
+   this.setData({
+     todayTemp: `${weatherResult.today.minTemp}°C~${weatherResult.today.maxTemp}°C`,
+     todayDate: `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} 今天`
+   })
+  },
+  setHourlyForcast(weatherResult){
+    let forecastResults = weatherResult.forecast;
+    let nowHour = new Date().getHours();
+    let forecast = [];
+    for (let i = 0; i < 8; i++) {
+      forecast.push({
+        time: (nowHour + i * 3) % 24,
+        iconPath: "/images/" + forecastResults[i].weather + "-icon.png",
+        temp: forecastResults[i].temp + "°C"
+      });
+    };
+    forecast[0].time = "Now"
+    this.setData({
+      forecast: forecast,
+    })
+  },
+  onTapDayWeather(){
+    wx.navigateTo({
+      url: "/pages/list/list",
+    })
   }
-})
+ })
