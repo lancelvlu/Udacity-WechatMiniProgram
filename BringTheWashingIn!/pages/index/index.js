@@ -15,9 +15,13 @@ const weatherColorMap = {
   'snow': '#aae1fc'
 }
 
+const amapFile = require('../../libs/amap-wx.js');
+
+
 Page({
   onLoad() {
     // console.log("Hello Wold")
+    this.amapsdk = new amapFile.AMapWX({ key: '9f072d6d42964ba971dccb0474336181' })
     this.getNow()
   },
   onPullDownRefresh() {
@@ -32,11 +36,17 @@ Page({
     forecast: [],
     todayTemp: "",
     todayDate: "",
+    city:"成都市",
+    locationTipsText: "点击获取当前位置",
   },
   getNow(callback) {
     // let that = this
+    // console.log(this.data.city)
     wx.request({
-      url: 'https://test-miniprogram.com/api/weather/now?city=北京市',
+      url: 'https://test-miniprogram.com/api/weather/now',
+      data: {
+        city : this.data.city,
+      },
       success: (res) => {
         // console.log(res.data)
         let weatherResult = res.data.result
@@ -93,5 +103,35 @@ Page({
     wx.navigateTo({
       url: "/pages/list/list",
     })
+  },
+  onTapLocation(){
+    wx.getLocation({
+      success: (res) => {
+        let longitude = res.longitude
+        let latitude = res.latitude
+        this.amapsdk.getRegeo({
+          location: `${longitude},${latitude}`,
+          success: (data) => {
+            // console.log(data)
+            let city = '';
+            if (data[0].regeocodeData.addressComponent.city[0]) {
+              city = data[0].regeocodeData.addressComponent.city;
+            } else {
+              city = data[0].regeocodeData.addressComponent.province;
+            };
+            this.setData({
+              city: city,
+              locationTipsText: ""
+            })
+          },
+          fail: (info) => {
+            console.log(info);
+          }
+        })
+      },
+    });
+    this.getNow();
+    // console.log(this.data)
   }
+
  })

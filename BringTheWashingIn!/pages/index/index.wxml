@@ -1,11 +1,11 @@
 <!--index.wxml-->
 <view class="weather-wrapper">
   <view class="location-wrapper">
-    <view class="location">
+    <view class="location" bindtap="onTapLocation">
       <image class="location-icon" src="/images/location-icon.png"></image>
-      <view class="location-text">北京市</view>
+      <view class="location-text">{{city}}</view>
     </view>
-    <view class="location-tips">点击获取当前位置</view>
+    <view class="location-tips">{{locationTipsText}}</view>
   </view>
   <view class="temp">{{temp}}</view>
   <view class="weather">{{weather}}</view>

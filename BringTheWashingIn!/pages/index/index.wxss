@@ -47,6 +47,7 @@
   opacity: 0.5;
   font-size: 30rpx;
   line-height: 42prx;
+  height: 42rpx;
 }
 
 .day-weather {
