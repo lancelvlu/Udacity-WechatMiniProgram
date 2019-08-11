@@ -7,7 +7,8 @@ Page({
     time: new Date().getTime(),
     weeklyWeatherForcast: []
   },
-  onLoad: function () {
+  onLoad: function (option) {
+    console.log(option)
     this.getNow()
   },
   onPullDownRefresh: function () {

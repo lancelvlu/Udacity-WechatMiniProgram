@@ -102,6 +102,9 @@ Page({
   onTapDayWeather(){
     wx.navigateTo({
       url: "/pages/list/list",
+      data: {
+        city: this.data.city,
+      }
     })
   },
   onTapLocation(){
