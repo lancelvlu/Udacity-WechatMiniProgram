@@ -15,16 +15,41 @@ const weatherColorMap = {
   'snow': '#aae1fc'
 }
 
+const UNPROMPTED = 0
+const UNAUTHORIZED = 1
+const AUTHORIZED = 2
+
+const UNPROMPTED_TIPS = "点击获取当前位置"
+const UNAUTHORIZED_TIPS = "点击开启位置权限"
+const AUTHORIZED_TIPS = ""
+
 const amapFile = require('../../libs/amap-wx.js');
 
 
 Page({
   onLoad() {
+    console.log('onLoad')
     // console.log("Hello Wold")
     this.amapsdk = new amapFile.AMapWX({ key: '9f072d6d42964ba971dccb0474336181' })
     this.getNow()
   },
+  onShow() {
+    console.log('onShow')
+    wx.getSetting({
+      success: (res)=>{
+        let auth = res.authSetting["scope.userLocation"]
+        if (auth && this.locationAuthType !== AUTHORIZED) {
+          this.setData({
+            locationAuthType: AUTHORIZED,
+            locationTipsText: AUTHORIZED_TIPS,
+          })
+          this.getLocation()
+        }
+      }
+    })
+  },
   onPullDownRefresh() {
+    console.log('onPullDownRefresh')
     this.getNow(() => {
       wx.stopPullDownRefresh()
     })
@@ -37,11 +62,10 @@ Page({
     todayTemp: "",
     todayDate: "",
     city:"成都市",
-    locationTipsText: "点击获取当前位置",
+    locationAuthType: UNPROMPTED,
+    locationTipsText: UNPROMPTED_TIPS,
   },
   getNow(callback) {
-    // let that = this
-    // console.log(this.data.city)
     wx.request({
       url: 'https://test-miniprogram.com/api/weather/now',
       data: {
@@ -108,6 +132,11 @@ Page({
     })
   },
   onTapLocation(){
+    this.getLocation()
+    this.getNow();
+    // console.log(this.data)
+  },
+  getLocation(){
     wx.getLocation({
       success: (res) => {
         let longitude = res.longitude
@@ -124,17 +153,22 @@ Page({
             };
             this.setData({
               city: city,
-              locationTipsText: ""
+              locationAuthType: AUTHORIZED,
+              locationTipsText: AUTHORIZED_TIPS
             })
           },
-          fail: (info) => {
-            console.log(info);
+          fail: (res) => {
+            console.log(res)
           }
         })
       },
+      fail: (res) => {
+        this.setData({
+          locationAuthType: UNAUTHORIZED,
+          locationTipsText: UNAUTHORIZED_TIPS,
+        })
+      }
     });
-    this.getNow();
-    // console.log(this.data)
   }
 
  })

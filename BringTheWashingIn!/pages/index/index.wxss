@@ -23,6 +23,9 @@
   margin-bottom: 60rpx;
   font-size: 40rpx;
   line-height: 56prx;
+  color: rgba(0, 0, 0, 0.5)!important;
+  border: none!important;
+  padding: 0!important;
 }
 
 .location{
@@ -46,7 +49,7 @@
   text-align: center;
   opacity: 0.5;
   font-size: 30rpx;
-  line-height: 42prx;
+  line-height: 42rpx;
   height: 42rpx;
 }
 

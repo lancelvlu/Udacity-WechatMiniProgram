@@ -8,10 +8,12 @@ Page({
     weeklyWeatherForcast: []
   },
   onLoad: function (option) {
+    console.log('onLoad')
     console.log(option)
     this.getNow()
   },
   onPullDownRefresh: function () {
+    console.log('onPullDownRefresh')
     this.getNow(() => {
       wx.stopPullDownRefresh()
     })
